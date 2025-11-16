@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Phone Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .checkout-form-card,
+    .order-summary-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .page-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: #333;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .order-summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .order-summary-item:last-child {
+        border-bottom: none;
+    }
+    
+    .order-total {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #f0f0f0;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #667eea;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    @media (max-width: 768px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Checkout</h1>
+
+<div class="checkout-container">
+    <div class="checkout-form-card">
+        <h2 class="section-title">Shipping Information</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Place Order</button>
+        </form>
+    </div>
+    
+    <div class="order-summary-card">
+        <h2 class="section-title">Order Summary</h2>
+        {% for item in cart %}
+        <div class="order-summary-item">
+            <div>
+                <strong>{{ item.product.name }}</strong>
+                <div style="color: #666; font-size: 0.9rem;">{{ item.quantity }} × ${{ item.price }}</div>
+            </div>
+            <div style="font-weight: bold;">${{ item.total_price }}</div>
+        </div>
+        {% endfor %}
+        <div class="order-total">
+            <span>Total:</span>
+            <span>${{ cart.get_total_price }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

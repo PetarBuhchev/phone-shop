@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Phone Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .auth-title {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        color: #333;
+    }
+    
+    .auth-links {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    .auth-links a {
+        color: #667eea;
+        text-decoration: none;
+    }
+    
+    .auth-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h1 class="auth-title">Create Account</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}
+                <small style="color: #666; font-size: 0.9rem;">{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+                <ul class="errorlist">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Register</button>
+    </form>
+    
+    <div class="auth-links">
+        <p>Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+    </div>
+</div>
+{% endblock %}
+
