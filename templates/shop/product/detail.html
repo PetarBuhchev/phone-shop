@@ -34,7 +34,27 @@
         font-size: 2rem;
         color: #667eea;
         font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .stock-status-detail {
         margin-bottom: 1.5rem;
+    }
+    
+    .in-stock-detail {
+        color: #28a745;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .out-of-stock-detail {
+        color: #dc3545;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .out-of-stock-message {
+        margin-bottom: 2rem;
     }
     
     .product-description {
@@ -94,6 +114,14 @@
         <h1>{{ product.name }}</h1>
         <div class="product-price-large">${{ product.price }}</div>
         
+        <div class="stock-status-detail">
+            {% if product.stock > 0 %}
+                <span class="in-stock-detail">✓ In Stock</span>
+            {% else %}
+                <span class="out-of-stock-detail">✗ Out of Stock</span>
+            {% endif %}
+        </div>
+        
         <div class="product-description">
             <h3>Description</h3>
             <p>{{ product.description }}</p>
@@ -104,14 +132,20 @@
             <p>{{ product.specifications }}</p>
         </div>
         
-        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="add-to-cart-form">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ cart_product_form.quantity.label_tag }}
-                {{ cart_product_form.quantity }}
+        {% if product.stock > 0 %}
+            <form action="{% url 'cart:cart_add' product.id %}" method="post" class="add-to-cart-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ cart_product_form.quantity.label_tag }}
+                    {{ cart_product_form.quantity }}
+                </div>
+                <button type="submit" class="btn btn-success">Add to Cart</button>
+            </form>
+        {% else %}
+            <div class="out-of-stock-message">
+                <button class="btn btn-secondary" disabled>This item is currently out of stock</button>
             </div>
-            <button type="submit" class="btn btn-success">Add to Cart</button>
-        </form>
+        {% endif %}
         
         <div style="margin-top: 2rem;">
             <a href="{% url 'shop:product_list' %}" class="btn">Back to Products</a>

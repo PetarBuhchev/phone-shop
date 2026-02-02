@@ -4,11 +4,11 @@ from .models import Product, Order, OrderItem
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', 'available', 'created', 'updated']
-    list_filter = ['available', 'created', 'updated']
+    list_display = ['name', 'manufacturer', 'price', 'stock', 'available', 'created', 'updated']
+    list_filter = ['available', 'created', 'updated', 'manufacturer']
     list_editable = ['price', 'stock', 'available']
     prepopulated_fields = {'slug': ('name',)}
-    search_fields = ['name', 'description']
+    search_fields = ['name', 'description', 'manufacturer']
     date_hierarchy = 'created'
 
 
