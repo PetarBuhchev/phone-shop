@@ -1,0 +1,41 @@
+Order Confirmation
+
+Hello {{ order.first_name }} {{ order.last_name }},
+
+We're delighted to confirm that your order has been successfully received and is being processed. Here are the details of your purchase:
+
+ORDER INFORMATION
+-----------------
+Order ID: #{{ order.id }}
+Order Date: {{ order.created|date:"F d, Y - H:i" }}
+Status: {{ order.get_status_display }}
+
+SHIPPING ADDRESS
+----------------
+{{ order.first_name }} {{ order.last_name }}
+{{ order.address }}
+Phone: {{ order.phone }}
+
+ORDER ITEMS
+-----------
+{% for item in order.items.all %}
+- {{ item.product.name }}
+  Quantity: {{ item.quantity }}
+  Price: ${{ item.price }} each
+  Total: ${{ item.get_cost }}
+
+{% endfor %}
+
+TOTAL AMOUNT: ${{ order.get_total_cost }}
+
+WHAT'S NEXT?
+-----------
+Your order is currently being processed. You will receive another email once your order has been shipped with tracking information.
+
+Expected delivery time: 5-7 business days
+
+If you have any questions about your order, please feel free to contact us.
+
+Thank you for your business!
+
+© 2026 Phone Shop. All rights reserved.

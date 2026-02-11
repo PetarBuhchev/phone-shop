@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from shop.models import Product, Order, OrderItem
+from shop.utils import send_order_confirmation_email
 from .cart import Cart
 from .forms import CartAddProductForm
 from accounts.forms import OrderCreateForm
@@ -99,6 +100,10 @@ def order_create(request):
             # clear the cart
             cart.clear()
             logger.info(f"Order {order.id} created by user {request.user} for {cart.get_total_price()}")
+            
+            # Send order confirmation email
+            send_order_confirmation_email(order)
+            
             return render(request, 'cart/created.html', {'order': order})
     else:
         if request.user.is_authenticated:
