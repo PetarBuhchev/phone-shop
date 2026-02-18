@@ -1,10 +1,42 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from django.contrib import messages
 from .forms import UserRegistrationForm, UserProfileForm, UserUpdateForm
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class CustomLoginView(LoginView):
+    """
+    Custom login view that handles pending cart additions.
+    After successful login, user is redirected to complete pending cart operations.
+    """
+    template_name = 'accounts/login.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Check if there's a pending cart addition
+        if 'pending_cart_add' in self.request.session:
+            context['pending_cart_message'] = True
+        return context
+    
+    def get_success_url(self):
+        """
+        Redirect to complete pending cart addition if exists, otherwise use next parameter.
+        """
+        # Check if there's a pending cart addition to complete
+        if 'pending_cart_add' in self.request.session:
+            return '/cart/complete-pending/'
+        
+        # Otherwise use the default next parameter
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        
+        return super().get_success_url()
 
 
 def register(request):
@@ -14,6 +46,11 @@ def register(request):
             user = form.save()
             logger.info(f"New user registered: {user.username}")
             login(request, user)
+            
+            # Check for pending cart addition after registration
+            if 'pending_cart_add' in request.session:
+                return redirect('cart:complete_pending_add')
+            
             return redirect('shop:product_list')
     else:
         form = UserRegistrationForm()
@@ -48,4 +85,3 @@ def logout_view(request):
     logger.info(f"User {request.user.username} logged out")
     logout(request)
     return redirect('shop:product_list')
-
